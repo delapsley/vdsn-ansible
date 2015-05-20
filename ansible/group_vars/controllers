@@ -1,0 +1,4 @@
+---
+vxlan_remote_ip:    169.254.1.1
+vxlan_listen_port:  8473
+vxlan_kernel_port:  8472

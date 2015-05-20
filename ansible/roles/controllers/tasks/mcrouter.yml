@@ -1,0 +1,81 @@
+#   Copyright 2015 Cisco Systems, Inc
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+---
+- name: Clone folly from git repository
+  sudo: yes
+  git: >
+      repo={{ REPOS.folly_repo }}
+      dest={{ FILES.base_dir }}/folly
+      accept_hostkey=yes
+
+- name: Clone mcrouter from git repository
+  sudo: yes
+  git: >
+      repo={{ REPOS.mcrouter_repo }}
+      dest={{ FILES.base_dir }}/mcrouter
+      accept_hostkey=yes
+
+- name: Install folly
+  sudo: yes
+  shell: >
+      cd {{ FILES.folly_dir }} ;
+      cd folly ;
+      autoreconf -ivf ;
+      ./configure ;
+      make ;
+      make check ;
+      sudo make install
+  args:
+    creates: "{{ FILES.folly_lib }}"
+
+- name: Install mcrouter
+  sudo: yes
+  shell: >
+      export LD_LIBRARY_PATH=/usr/local/lib ;
+      cd {{ FILES.mcrouter_dir }} ;
+      cd mcrouter ;
+      autoreconf --install ;
+      ./configure ;
+      make ;
+      make install
+  args:
+    creates: "{{ FILES.mcrouter_exec }}"
+
+- name: Update system shared library path
+  sudo: yes
+  template: src=local-lib.conf.j2 dest={{ FILES.lib_conf }} owner=root group=root force=yes
+
+- name: Update system shared library path
+  sudo: yes
+  shell: ldconfig
+  
+- name: Install mcrouter upstart script
+  sudo: yes
+  template: src=mcrouter.conf.j2 dest={{ FILES.mcrouter_upstart }} owner=root group=root
+
+- name: Configure mcrouter directory
+  sudo: yes
+  file: dest={{ item }} mode=755 owner=root group=root state=directory
+  with_items:
+    - "{{ FILES.mcrouter_run_dir }}"
+    - "{{ FILES.mcrouter_spool_dir }}"
+    - "{{ FILES.mcrouter_log_dir }}"
+    - "{{ FILES.mcrouter_conf_dir }}"
+
+- name: Configure mcrouter
+  sudo: yes
+  template: src=mcrouter.json.j2 dest={{ FILES.mcrouter_conf }} owner=root group=root
+
+- name: Enable mcrouter upstart service
+  service: name=mcrouter enabled=yes state=started

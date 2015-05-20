@@ -1,0 +1,85 @@
+#   Copyright 2015 Cisco Systems, Inc
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+---
+NETWORKS:
+  binetaddr: 10.0.1.0
+  mcrouter_port: 11212
+
+APT_PACKAGES:
+  - autoconf
+  - autoconf-archive
+  - automake
+  - binutils-dev
+  - cluster-glue
+  - corosync
+  - crmsh
+  - g++
+  - git
+  - haveged
+  - libboost-all-dev
+  - libcap-dev
+  - libdouble-conversion-dev
+  - libevent-dev
+  - libffi-dev
+  - libgflags-dev
+  - libgoogle-glog-dev
+  - libiberty-dev
+  - libjemalloc-dev
+  - liblz4-dev
+  - liblzma-dev
+  - libmemcached-dev
+  - libmysqlclient-dev
+  - libpcap-dev
+  - libsnappy-dev
+  - libssl-dev
+  - libtool
+  - libxml2-dev
+  - libxslt-dev
+  - libyaml-dev
+  - make
+  - memcached
+  - mongodb
+  - pacemaker
+  - python-dev
+  - python-mysqldb
+  - python-pip
+  - python-yaml
+  - ragel
+  - resource-agents
+  - zlib1g-dev
+
+REPOS:
+  folly_repo:       https://github.com/facebook/folly.git
+  mcrouter_repo:    https://github.com/facebook/mcrouter.git
+
+FILES:
+  base_dir: /home/vagrant
+  folly_dir: /home/vagrant/folly
+  mcrouter_log_file: mcrouter.log
+  mcrouter_pid_file: mcrouter.pid
+  mcrouter_dir: /home/vagrant/mcrouter
+  mcrouter_conf_dir: /etc/mcrouter
+  mcrouter_log_dir: /var/log/mcrouter
+  mcrouter_run_dir: /var/run/mcrouter
+  mcrouter_spool_dir: /var/mcrouter/spool
+  mcrouter_stats_dir: /var/mcrouter/stats
+  mcrouter_exec: /usr/local/bin/mcrouter
+  mcrouter_conf: /etc/mcrouter/mcrouter.json
+  mcrouter_upstart: /etc/init/mcrouter.conf
+  folly_lib: /usr/local/lib/libfolly.a
+  lib_conf: /etc/ld.so.conf.d/local-lib.conf
+
+MEMCACHE:
+  listen_ip: "{{ ansible_eth1.ipv4.address }}"
+  memory_in_mb: 512

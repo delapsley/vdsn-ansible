@@ -1,0 +1,31 @@
+#   Copyright 2015 Cisco Systems, Inc
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+---
+- name: Setup iptables rules
+  sudo: yes
+  shell: >
+    iptables -t nat -A OUTPUT -d "{{ vxlan_remote_ip }}"/32 -p udp -m udp \
+      --dport "{{ vxlan_kernel_port }}" -j DNAT \
+      --to-destination "{{ vxlan_listen_ip }}":"{{ vxlan_listen_port }}"
+
+- name: Setup vxlan interfaces
+  sudo: yes
+  shell: >
+    ip link add "{{ item.label }}" type vxlan id "{{ item.vni }}" \
+      remote "{{ vxlan_remote_ip }}" dev eth0 ;
+    ip addr add "{{ item.address }}" dev "{{ item.label }}" ;
+    ip link set dev "{{ item.label }}" mtu 1450 ;
+    ip link set dev "{{ item.label }}" up
+  with_items:
+    VXLAN_INTERFACES

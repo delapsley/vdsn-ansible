@@ -1,0 +1,5 @@
+---
+vxlan_remote_ip:       169.254.1.1
+vdsn_select_timeout:   1.0
+vdsn_refresh_interval: 5.0
+vdsn_thread_count:     2

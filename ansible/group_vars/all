@@ -1,0 +1,4 @@
+---
+vxlan_listen_port:     8473
+vxlan_kernel_port:     8472
+vxlan_listen_ip:       127.0.0.1

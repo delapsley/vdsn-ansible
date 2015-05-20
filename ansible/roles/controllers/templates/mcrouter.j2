@@ -1,0 +1,29 @@
+# mcrouter - memcached protocol router
+#
+# mcrouter is a memcached protocol router for
+# scaling memcached deployments
+#
+# original author: jeffbyrnes
+# original source: https://github.com/facebook/mcrouter/issues/31
+
+description "memcached protocol router"
+
+start on runlevel [2345]
+stop on runlevel [2345]
+
+respawn
+
+setuid mcrouter
+
+script
+    PROG_ARGS="--async-dir=/var/mcrouter/spool"
+    PROG_ARGS="$PROG_ARGS --send-invalid-route-to-default"
+    PROG_ARGS="$PROG_ARGS --num-proxies=16"
+    PROG_ARGS="$PROG_ARGS --stats-root=/var/mcrouter/stats"
+    PROG_ARGS="$PROG_ARGS --log-path=/var/mcrouter/log/mcrouter.log"
+    PROG_ARGS="$PROG_ARGS --port=11211"
+    PROG_ARGS="$PROG_ARGS --config-file={{ FILES.mcrouter_conf }}"
+    # PROG_ARGS="$PROG_ARGS --pid-file=/var/run/mcrouter/mcrouter.pid"
+
+    exec {{ FILES.mcrouter_exec }} $PROG_ARGS
+end script
